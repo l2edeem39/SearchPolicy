@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SearchPolicy.Api.Service;
+using SearchPolicy.Api.Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,10 @@ namespace SearchPolicy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            //add Service
+            services.AddTransient<ICmiService, CmiService>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SearchPolicyAPI", Version = "v1" });
