@@ -18,57 +18,47 @@ namespace SearchPolicy.Api.Controllers.NonMotor
     [ApiController]
     public class NonMotorController : Controller
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly"
-        };
 
         [Route("api/1.0/SearchPolicyByRangeDate")]
         [HttpPost]
-        public IEnumerable<WeatherForecast> SearchPolicyByRangeDate(string field, string keyword, string keyname, string startYearTh, string endYearTh)
+        public JsonResult SearchPolicyByRangeDate(string field, string keyword, string keyname, string startYearTh, string endYearTh)
         {
+            var data = new { field = field, keyword = keyword };
             startYearTh = !string.IsNullOrEmpty(startYearTh) ? DateTime.Parse("01/01/" + startYearTh).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
             endYearTh = !string.IsNullOrEmpty(endYearTh) ? DateTime.Parse("01/01/" + endYearTh).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
 
-            //switch (field)
-            //{
-            //    case "app":
-            //        cmd.CommandText = GenarateQuerySearchAppByRangeDate(keyword, keyname, MaxPolicyReturned);
-            //        break;
-            //    case "pol":
-            //        cmd.CommandText = GenarateQuerySearchPolByRangeDate(keyword, keyname, MaxPolicyReturned);
-            //        break;
-            //    case "idno":
-            //        cmd.CommandText = GenarateQuerySearchIdNoByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "license":
-            //        cmd.CommandText = GenarateQuerySearchbyLicenseByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "chassis":
-            //        cmd.CommandText = GenarateQuerySearchChassisByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "engine":
-            //        cmd.CommandText = GenarateQuerySearchEngineNoRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "asname":
-            //        cmd.CommandText = GenarateQuerySearchAsnameByRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "name":
-            //        cmd.CommandText = GenarateQuerySearchNameByRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //    case "hldname":
-            //        cmd.CommandText = GenarateQuerySearchHldnameRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
-            //        break;
-            //}
-
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            switch (field)
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                case "app":
+                    //cmd.CommandText = GenarateQuerySearchAppByRangeDate(keyword, keyname, MaxPolicyReturned);
+                    break;
+                case "pol":
+                    //cmd.CommandText = GenarateQuerySearchPolByRangeDate(keyword, keyname, MaxPolicyReturned);
+                    break;
+                case "idno":
+                    //cmd.CommandText = GenarateQuerySearchIdNoByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "license":
+                    //cmd.CommandText = GenarateQuerySearchbyLicenseByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "chassis":
+                    //cmd.CommandText = GenarateQuerySearchChassisByRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "engine":
+                    //cmd.CommandText = GenarateQuerySearchEngineNoRangeDate(keyword, keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "asname":
+                    //cmd.CommandText = GenarateQuerySearchAsnameByRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "name":
+                    //cmd.CommandText = GenarateQuerySearchNameByRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+                case "hldname":
+                    //cmd.CommandText = GenarateQuerySearchHldnameRangeDate(keyname, startYearTh, endYearTh, MaxPolicyReturned);
+                    break;
+            }
+
+            return new JsonResult(data);
         }
 
         //private void GetResponseHeader(string requestTime)
