@@ -20,7 +20,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            "Freezing", "Bracing", "Chilly"
         };
 
         [Route("api/1.0/SearchPolicyByRangeDate")]
