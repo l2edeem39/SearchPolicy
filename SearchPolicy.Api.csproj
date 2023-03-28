@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Cmi\" />
     <Folder Include="Controllers\Vmi\" />
-    <Folder Include="Service\" />
     <Folder Include="Validator\" />
   </ItemGroup>
 
