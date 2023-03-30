@@ -13,14 +13,10 @@ namespace SearchPolicy.Api.Service
 {
     public class CmiService : ICmiService
     {
-        public string SearchCmi()
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchPolByRangeDate(string polnumber, string maxCmiReturned)
         {
-            return "123456789";
-        }
-
-        public string GenarateQuerySearchPolByRangeDate(string polnumber, int maxCmiReturned)
-        {
-            return "";
+            var result = new List<ResponseSearchByRangeDateModel>();
+            return result;
         }
 
         public List<ResponseSearchByRangeDateModel> GenarateQueryLicenseByRangeDate(string chassisnumber, string startYear, string endYear, string maxCmiReturned, string conn)

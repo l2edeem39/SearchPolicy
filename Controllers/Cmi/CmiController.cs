@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SearchPolicy.Api.Model.Cmi;
 using SearchPolicy.Api.Service;
 using SearchPolicy.Api.Service.Interface;
 using System;
@@ -24,6 +25,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
         [HttpPost]
         public IActionResult SearchPolicyByRangeDate(string field, string keyword, string startYear, string endYear)
         {
+            var result = new List<ResponseSearchByRangeDateModel>();
             startYear = !string.IsNullOrEmpty(startYear) ? startYear.Substring(2, 2) : string.Empty;
             endYear = !string.IsNullOrEmpty(endYear) ? endYear.Substring(2, 2) : string.Empty;
             var MaxPolicyReturned = _config.GetSection("DataDefault")["MaxPolicyReturned"].ToString();
@@ -31,11 +33,11 @@ namespace SearchPolicy.Api.Controllers.Cmi
             switch (field)
             {
                 case "pol":
-                    //cmd.CommandText = GenarateQuerySearchPolByRangeDate(keyword, MaxCmiReturned);
+                    result = _servicecmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned);
                     break;
                 case "license":
-                    var result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
-                    return Ok(result);
+                    result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                    break;
                 case "chassis":
                     //cmd.CommandText = GenarateQueryChassisByRangeDate(keyword, startYear, endYear, MaxCmiReturned);
                     break;
@@ -50,7 +52,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
                     break;
             }
 
-            return Ok();
+            return Ok(result);
         }
         private string GetConnection()
         {
