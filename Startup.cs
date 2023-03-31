@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SearchPolicy.Api.Logging;
 using SearchPolicy.Api.Service;
 using SearchPolicy.Api.Service.Interface;
+using SearchPolicy.Share.EnvironmentShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +69,12 @@ namespace SearchPolicy
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SearchPolicyAPI");
                 c.RoutePrefix = string.Empty;
+            });
+            EnvironmentShared._configuration = Configuration; ;
+            Logging.SetLogConnection(Configuration.GetConnectionString("logdb"));
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
             });
         }
     }

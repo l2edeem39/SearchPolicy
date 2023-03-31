@@ -5,11 +5,19 @@ using System.Threading.Tasks;
 
 namespace SearchPolicy.Api.Logging
 {
-    public class LogModel<T1, T2, T3> where T1 : class where T2 : class where T3 : class
+    public class LogModel
     {
-        public T1 Request { get; set; }
-        public T2 Header { get; set; }
-        public T3 Response { get; set; }
         public string Message { get; set; }
+        public string Header { get; set; }
+        public string Body { get; set; }
+        public string Response { get; set; }
+        //public string Level { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public Exception Exception { get; set; }
+        public string Description1 { get; set; }
+        public string Description2 { get; set; }
+        public string Description3 { get; set; }
+        public string Application { get; set; }
+        public string HttpStatus { get; set; }
     }
 }
