@@ -69,7 +69,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -128,7 +128,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -201,7 +201,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -238,7 +238,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -275,7 +275,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -311,7 +311,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -346,7 +346,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 
@@ -381,7 +381,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                return null;
+                throw;
             }
         }
 

@@ -9,15 +9,16 @@ namespace SearchPolicy.Api.Logging
     {
         private static string _logConnectionString;
 
-        public static void SetLogConnection(string connectionString)
-        {
-            _logConnectionString = connectionString;
-        }
-        public static async Task<int> LogInformation(LogModel model)
+        //public static void SetLogConnection(string connectionString)
+        //{
+        //    _logConnectionString = connectionString;
+        //}
+        public static async Task<int> LogInformation(LogModel model, string connectionString)
         {
             int insert_row = -1;
             try
             {
+                _logConnectionString = connectionString;
                 insert_row = await Insert(LogEnum.Level.Information, model);
             }
             catch (Exception)
@@ -26,11 +27,12 @@ namespace SearchPolicy.Api.Logging
             }
             return insert_row;
         }
-        public static async Task<int> LogWarnning(LogModel model)
+        public static async Task<int> LogWarnning(LogModel model, string connectionString)
         {
             int insert_row = -1;
             try
             {
+                _logConnectionString = connectionString;
                 insert_row = await Insert(LogEnum.Level.Warnning, model);
             }
             catch (Exception)
@@ -39,11 +41,12 @@ namespace SearchPolicy.Api.Logging
             }
             return insert_row;
         }
-        public static async Task<int> LogError(LogModel model)
+        public static async Task<int> LogError(LogModel model, string connectionString)
         {
             int insert_row = -1;
             try
             {
+                _logConnectionString = connectionString;
                 insert_row = await Insert(LogEnum.Level.Error, model);
             }
             catch (Exception)
@@ -52,11 +55,12 @@ namespace SearchPolicy.Api.Logging
             }
             return insert_row;
         }
-        public static async Task<int> LogSuccess(LogModel model)
+        public static async Task<int> LogSuccess(LogModel model, string connectionString)
         {
             int insert_row = -1;
             try
             {
+                _logConnectionString = connectionString;
                 insert_row = await Insert(LogEnum.Level.Success, model);
             }
             catch (Exception)
@@ -80,7 +84,7 @@ namespace SearchPolicy.Api.Logging
 
                 SqlParameter[] param = new SqlParameter[]
                 {
-                new SqlParameter("@Message",!string.IsNullOrEmpty(model.Message)?string.Empty:model.Message),
+                new SqlParameter("@Message",string.IsNullOrEmpty(model.Message)?string.Empty:model.Message),
                 new SqlParameter("@Header",string.IsNullOrEmpty(model.Header)?string.Empty:model.Header),
                 new SqlParameter("@Body",string.IsNullOrEmpty(model.Body)?string.Empty:model.Body),
                 new SqlParameter("@Response",string.IsNullOrEmpty(model.Response)?string.Empty:model.Response),
@@ -104,7 +108,7 @@ namespace SearchPolicy.Api.Logging
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
             }

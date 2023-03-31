@@ -25,7 +25,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
         private readonly IConfiguration _config;
         ResponseSearchPolicy response = new ResponseSearchPolicy();
         DateTime requestDate;
-        
+        private readonly string Condb = "NonDB1";
         public NonMotorController(IConfiguration config)
         {
             _config = config;
@@ -99,7 +99,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                     response.ErrorCode = ErrorCode.Code400;
                     response.ErrorMessage = "Field Not Found";
                     response.Status = "1";
-                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode);
+                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode, _config.GetConnectionString(Condb));
                     return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
                 }
                 else if (SearchPolicys.Count == 0)
@@ -108,7 +108,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                     response.ErrorCode = ErrorCode.Code400;
                     response.ErrorMessage = "Data Not Found";
                     response.Status = "1";
-                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode);
+                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode, _config.GetConnectionString(Condb));
                     return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
                 }
                 //return Ok(Json(SearchPolicys));
@@ -116,7 +116,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 response.ErrorCode = "";
                 response.ErrorMessage = "";
                 response.Status = "0";
-                WriteLog(LogEnum.Level.Success, requestSearch, requestHeader, response, statusCode);
+                WriteLog(LogEnum.Level.Success, requestSearch, requestHeader, response, statusCode, _config.GetConnectionString(Condb));
                 return StatusCode(statusCode, new { response, data = SearchPolicys });
             }
             catch (Exception ex)
@@ -125,12 +125,12 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 response.ErrorCode = SystemStatusCode.SystemError;
                 response.ErrorMessage = ex.Message;
                 response.Status = "1";
-                WriteLog(requestSearch, requestHeader, response, ex, statusCode);
+                WriteLog(requestSearch, requestHeader, response, ex, statusCode, _config.GetConnectionString(Condb));
                 return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
             }
         }
 
-        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code)
+        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code, string connectionString)
         {
             var log = new LogModel
             {
@@ -139,15 +139,17 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 Body = JsonConvert.SerializeObject(requestData),
                 Header = JsonConvert.SerializeObject(requestHeader),
                 Response = JsonConvert.SerializeObject(response),
-                HttpStatus = status_code.ToString()
+                HttpStatus = status_code.ToString(),
+                Message = response.ErrorMessage
+
             };
             if (level.Equals(LogEnum.Level.Information))
-                await Logging.Logging.LogInformation(log);
+                await Logging.Logging.LogInformation(log, connectionString);
             else if (level.Equals(LogEnum.Level.Success))
-                await Logging.Logging.LogSuccess(log);
+                await Logging.Logging.LogSuccess(log, connectionString);
         }
 
-        private async void WriteLog(RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code)
+        private async void WriteLog(RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code, string connectionString)
         {
             var log = new LogModel
             {
@@ -157,9 +159,10 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 Header = JsonConvert.SerializeObject(requestHeader),
                 Response = JsonConvert.SerializeObject(response),
                 Exception = ex,
-                HttpStatus = status_code.ToString()
+                HttpStatus = status_code.ToString(),
+                Message = response.ErrorMessage
             };
-            await Logging.Logging.LogError(log);
+            await Logging.Logging.LogError(log, connectionString);
         }
     }
 }

@@ -71,11 +71,11 @@ namespace SearchPolicy
                 c.RoutePrefix = string.Empty;
             });
             EnvironmentShared._configuration = Configuration; ;
-            Logging.SetLogConnection(Configuration.GetConnectionString("logdb"));
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            //Logging.SetLogConnection(Configuration.GetConnectionString("logdb"));
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
         }
     }
 }
