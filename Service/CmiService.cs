@@ -48,7 +48,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
@@ -93,7 +93,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
@@ -138,7 +138,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
@@ -183,7 +183,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
@@ -228,7 +228,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
@@ -273,7 +273,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Close();
                 }
-                throw;
+                throw ex;
             }
         }
 
