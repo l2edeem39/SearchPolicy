@@ -7,8 +7,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
-using System.Data.SqlClient;
-using System.Web.Http;
 using SearchPolicy.Api.Model.NonMotor;
 
 namespace SearchPolicy.Api.Service
