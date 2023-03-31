@@ -35,15 +35,13 @@ namespace SearchPolicy.Api.Controllers.Cmi
         [HttpPost]
         public IActionResult SearchPolicyByRangeDate(string field, string keyword, string startYear, string endYear)
         {
-            RequestHeader requestHeader = null;
-            requestHeader = new RequestHeader
+            RequestHeader requestHeader = new RequestHeader
             {
                 sourceTransID = Request.Headers["sourceTransID"].ToString(),
                 requestTime = Request.Headers["requestTime"].ToString()
             };
 
-            RequestSearchAppByRangeDate requestSearch = null;
-            requestSearch = new RequestSearchAppByRangeDate
+            RequestSearchAppByRangeDate requestSearch = new RequestSearchAppByRangeDate
             {
                 fieldType = field,
                 keyword = keyword,
