@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SearchPolicy.Api.Model;
 using SearchPolicy.Api.Model.Cmi;
 using SearchPolicy.Api.Service;
 using SearchPolicy.Api.Service.Interface;
+using SearchPolicy.Share.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,9 @@ namespace SearchPolicy.Api.Controllers.Cmi
     [ApiController]
     public class CmiController : Controller
     {
+        ResponseSearchPolicy response = new ResponseSearchPolicy();
+        int statusCode = 200;
+
         private readonly ICmiService _servicecmi;
         private readonly IConfiguration _config;
         public CmiController(ICmiService servicecmi, IConfiguration config)
@@ -25,34 +30,65 @@ namespace SearchPolicy.Api.Controllers.Cmi
         [HttpPost]
         public IActionResult SearchPolicyByRangeDate(string field, string keyword, string startYear, string endYear)
         {
-            var result = new List<ResponseSearchByRangeDateModel>();
-            startYear = !string.IsNullOrEmpty(startYear) ? startYear.Substring(2, 2) : string.Empty;
-            endYear = !string.IsNullOrEmpty(endYear) ? endYear.Substring(2, 2) : string.Empty;
-            var MaxPolicyReturned = _config.GetSection("DataDefault")["MaxPolicyReturned"].ToString();
-            
-            switch (field)
+            try
             {
-                case "pol":
-                    result = _servicecmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned);
-                    break;
-                case "license":
-                    result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
-                    break;
-                case "chassis":
-                    //cmd.CommandText = GenarateQueryChassisByRangeDate(keyword, startYear, endYear, MaxCmiReturned);
-                    break;
-                case "name":
-                    //cmd.CommandText = GenarateQueryNameByRangeDate(keyword, startYear, endYear, MaxCmiReturned);
-                    break;
-                case "serial":
-                    //cmd.CommandText = GenarateQuerySerialnumberByRangeDate(keyword, startYear, endYear, MaxCmiReturned);
-                    break;
-                case "idno":
-                    //cmd.CommandText = GenarateQueryIdNoByRangeDate(keyword, startYear, endYear, MaxCmiReturned);
-                    break;
-            }
+                var result = new List<ResponseSearchByRangeDateModel>();
+                startYear = !string.IsNullOrEmpty(startYear) ? startYear.Substring(2, 2) : string.Empty;
+                endYear = !string.IsNullOrEmpty(endYear) ? endYear.Substring(2, 2) : string.Empty;
+                var MaxPolicyReturned = _config.GetSection("DataDefault")["MaxPolicyReturned"].ToString();
 
-            return Ok(result);
+                switch (field)
+                {
+                    case "pol":
+                        result = _servicecmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        break;
+                    case "license":
+                        result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        break;
+                    case "chassis":
+                        result = _servicecmi.GenarateQueryChassisByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        break;
+                    case "name":
+                        result = _servicecmi.GenarateQueryNameByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        break;
+                    case "serial":
+                        result = _servicecmi.GenarateQuerySerialnumberByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        break;
+                    case "idno":
+                        result = _servicecmi.GenarateQueryIdNoByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        break;
+                }
+
+                if (result == null)
+                {
+                    statusCode = 400;
+                    response.ErrorCode = ErrorCode.Code400;
+                    response.ErrorMessage = "Field Not Found";
+                    response.Status = "1";
+                    return StatusCode(statusCode, new { response, data = new List<ResponseSearchByRangeDateModel>() });
+                }
+                else if (result.Count == 0)
+                {
+                    statusCode = 400;
+                    response.ErrorCode = ErrorCode.Code400;
+                    response.ErrorMessage = "Data Not Found";
+                    response.Status = "1";
+                    return StatusCode(statusCode, new { response, data = new List<ResponseSearchByRangeDateModel>() });
+                }
+                statusCode = 200;
+                response.ErrorCode = "";
+                response.ErrorMessage = "";
+                response.Status = "0";
+                return StatusCode(statusCode, new { response, data = result });
+            }
+            catch (Exception ex)
+            {
+                statusCode = 500;
+                response.ErrorCode = SystemStatusCode.SystemError;
+                response.ErrorMessage = ex.Message;
+                response.Status = "1";
+                return StatusCode(statusCode, new { response, data = new List<ResponseSearchByRangeDateModel>() });
+            }
         }
         private string GetConnection()
         {
