@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using VaultSharp.V1.SystemBackend;
 using SearchPolicy.Api.Service;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Data;
 using SearchPolicy.Api.Model.NonMotor;
 using SearchPolicy.Api.Model;
+using Newtonsoft.Json;
 
 namespace SearchPolicy.Api.Controllers.NonMotor
 {
@@ -24,7 +24,8 @@ namespace SearchPolicy.Api.Controllers.NonMotor
     {
         private readonly IConfiguration _config;
         ResponseSearchPolicy response = new ResponseSearchPolicy();
-        int statusCode = 200;
+        DateTime requestDate;
+        
         public NonMotorController(IConfiguration config)
         {
             _config = config;
@@ -34,6 +35,24 @@ namespace SearchPolicy.Api.Controllers.NonMotor
         [HttpPost]
         public IActionResult SearchPolicyByRangeDate(string field, string keyword, string keyname, string startYear, string endYear)
         {
+            RequestHeader requestHeader = null;
+            requestHeader = new RequestHeader
+            {
+                sourceTransID = Request.Headers["sourceTransID"].ToString(),
+                requestTime = Request.Headers["requestTime"].ToString()
+            };
+
+            RequestSearchAppByRangeDate requestSearch = null;
+            requestSearch = new RequestSearchAppByRangeDate
+            {
+                fieldType = field,
+                keyword = keyword,
+                keyname = keyname,
+                startYear = startYear,
+                endYear = endYear
+            };
+            int statusCode = HttpStatusHelper.OK;
+            requestDate = DateTime.Now;
             try
             {
                 List<SearchAppByRangeDate> SearchPolicys = null;
@@ -76,72 +95,71 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 }
                 if (SearchPolicys == null)
                 {
-                    statusCode = 400;
+                    statusCode = HttpStatusHelper.BadRequest;
                     response.ErrorCode = ErrorCode.Code400;
                     response.ErrorMessage = "Field Not Found";
                     response.Status = "1";
-                    return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate> ()});
+                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode);
+                    return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
                 }
                 else if (SearchPolicys.Count == 0)
                 {
-                    statusCode = 400;
+                    statusCode = HttpStatusHelper.BadRequest;
                     response.ErrorCode = ErrorCode.Code400;
                     response.ErrorMessage = "Data Not Found";
                     response.Status = "1";
+                    WriteLog(LogEnum.Level.Information, requestSearch, requestHeader, response, statusCode);
                     return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
                 }
                 //return Ok(Json(SearchPolicys));
-                statusCode = 200;
+                statusCode = HttpStatusHelper.OK;
                 response.ErrorCode = "";
                 response.ErrorMessage = "";
                 response.Status = "0";
+                WriteLog(LogEnum.Level.Success, requestSearch, requestHeader, response, statusCode);
                 return StatusCode(statusCode, new { response, data = SearchPolicys });
             }
             catch (Exception ex)
             {
-                statusCode = 500;
+                statusCode = HttpStatusHelper.InternalServerError;
                 response.ErrorCode = SystemStatusCode.SystemError;
                 response.ErrorMessage = ex.Message;
                 response.Status = "1";
+                WriteLog(requestSearch, requestHeader, response, ex, statusCode);
                 return StatusCode(statusCode, new { response, data = new List<SearchAppByRangeDate>() });
-            }            
+            }
         }
-        //private void GetResponseHeader(string requestTime)
-        //{
-        //    Response.Headers.Add("requestTime", requestTime);
-        //    Response.Headers.Add("responseTime", DateHelper.GetHttpDateTime());
-        //}
 
-        //private async void WriteLog(LogEnum.Level level, RequestPreValidateCompulsory requestData, RequestHeader requestHeader, ResponsePreValidate response, int status_code)
-        //{
-        //    var log = new LogModel
-        //    {
-        //        Application = EnvironmentShared.GetProjectName(),
-        //        TimeStamp = requestDate,
-        //        Body = JsonConvert.SerializeObject(requestData),
-        //        Header = JsonConvert.SerializeObject(requestHeader),
-        //        Response = JsonConvert.SerializeObject(response),
-        //        HttpStatus = status_code.ToString()
-        //    };
-        //    if (level.Equals(LogEnum.Level.Information))
-        //        await Logging.LogInformation(log);
-        //    else if (level.Equals(LogEnum.Level.Success))
-        //        await Logging.LogSuccess(log);
-        //}
+        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code)
+        {
+            var log = new LogModel
+            {
+                Application = EnvironmentShared.GetProjectName(),
+                TimeStamp = requestDate,
+                Body = JsonConvert.SerializeObject(requestData),
+                Header = JsonConvert.SerializeObject(requestHeader),
+                Response = JsonConvert.SerializeObject(response),
+                HttpStatus = status_code.ToString()
+            };
+            if (level.Equals(LogEnum.Level.Information))
+                await Logging.Logging.LogInformation(log);
+            else if (level.Equals(LogEnum.Level.Success))
+                await Logging.Logging.LogSuccess(log);
+        }
 
-        //private async void WriteLog(RequestPreValidateCompulsory requestData, RequestHeader requestHeader, ResponsePreValidate response, Exception ex, int status_code)
-        //{
-        //    var log = new LogModel
-        //    {
-        //        Application = EnvironmentShared.GetProjectName(),
-        //        TimeStamp = requestDate,
-        //        Body = JsonConvert.SerializeObject(requestData),
-        //        Header = JsonConvert.SerializeObject(requestHeader),
-        //        Response = JsonConvert.SerializeObject(response),
-        //        Exception = ex,
-        //        HttpStatus = status_code.ToString()
-        //    };
-        //    await Logging.LogError(log);
-        //}
+        private async void WriteLog(RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code)
+        {
+            var log = new LogModel
+            {
+                Application = EnvironmentShared.GetProjectName(),
+                TimeStamp = requestDate,
+                Body = JsonConvert.SerializeObject(requestData),
+                Header = JsonConvert.SerializeObject(requestHeader),
+                Response = JsonConvert.SerializeObject(response),
+                Exception = ex,
+                HttpStatus = status_code.ToString()
+            };
+            await Logging.Logging.LogError(log);
+        }
     }
 }
