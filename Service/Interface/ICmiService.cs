@@ -8,7 +8,11 @@ namespace SearchPolicy.Api.Service.Interface
 {
     public interface ICmiService
     {
-        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchPolByRangeDate(string polnumber, string maxCmiReturned);
-        public List<ResponseSearchByRangeDateModel> GenarateQueryLicenseByRangeDate(string chassisnumber, string startYear, string endYear, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchPolByRangeDate(string polNumber, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQueryLicenseByRangeDate(string licenseNumber, string startYear, string endYear, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQueryChassisByRangeDate(string chassisNumber, string startYear, string endYear, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQueryNameByRangeDate(string name, string startYear, string endYear, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySerialnumberByRangeDate(string serialNumber, string startYear, string endYear, string maxCmiReturned, string conn);
+        public List<ResponseSearchByRangeDateModel> GenarateQueryIdNoByRangeDate(string idNo, string startYear, string endYear, string maxCmiReturned, string conn);
     }
 }
