@@ -25,7 +25,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
         private readonly IConfiguration _config;
         ResponseSearchPolicy response = new ResponseSearchPolicy();
         DateTime requestDate;
-        private readonly string Condb = "NonDB1";
+        string Condb = "";
         public NonMotorController(IConfiguration config)
         {
             _config = config;
@@ -56,7 +56,15 @@ namespace SearchPolicy.Api.Controllers.NonMotor
             try
             {
                 List<SearchAppByRangeDate> SearchPolicys = null;
-                var Condb = "NonDB1";
+                if (_config.GetValue<string>("DataDefault:DBSWHour").IndexOf("," + DateTime.Now.Hour.ToString() + ",") > 0)
+                {
+                    Condb = "NonDB2";
+                }
+                else
+                {
+                    Condb = "NonDB1";
+                }
+                
                 var MaxPolicyReturned = _config.GetValue<int>("DataDefault:MaxPolicyReturned");
                 var SubclassCar = _config.GetValue<string>("DataDefault:SubclassByType:Car");
                 startYear = !string.IsNullOrEmpty(startYear) ? DateTime.Parse("01/01/" + startYear).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
