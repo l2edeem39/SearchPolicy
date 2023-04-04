@@ -148,8 +148,9 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 Header = JsonConvert.SerializeObject(requestHeader),
                 Response = JsonConvert.SerializeObject(response),
                 HttpStatus = status_code.ToString(),
-                Message = response.ErrorMessage
-
+                Message = response.ErrorMessage,
+                Description1 = this.ControllerContext.RouteData.Values["controller"].ToString(),
+                Description2 = this.ControllerContext.RouteData.Values["action"].ToString()
             };
             if (level.Equals(LogEnum.Level.Information))
                 await Logging.Logging.LogInformation(log, connectionString);
@@ -168,7 +169,9 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 Response = JsonConvert.SerializeObject(response),
                 Exception = ex,
                 HttpStatus = status_code.ToString(),
-                Message = response.ErrorMessage
+                Message = response.ErrorMessage,
+                Description1 = this.ControllerContext.RouteData.Values["controller"].ToString(),
+                Description2 = this.ControllerContext.RouteData.Values["action"].ToString()
             };
             await Logging.Logging.LogError(log, connectionString);
         }

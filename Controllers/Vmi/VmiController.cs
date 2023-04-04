@@ -3,30 +3,28 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SearchPolicy.Api.Logging;
 using SearchPolicy.Api.Model;
-using SearchPolicy.Api.Model.Cmi;
+using SearchPolicy.Api.Model.Vmi;
 using SearchPolicy.Api.Service.Interface;
 using SearchPolicy.Share.EnvironmentShared;
 using SearchPolicy.Share.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SearchPolicy.Api.Controllers.Cmi
+namespace SearchPolicy.Api.Controllers.Vmi
 {
-    [Route("CmiSearchPolicy")]
+    [Route("VmiSearchPolicy")]
     [ApiController]
-    public class CmiController : Controller
+    public class VmiController : Controller
     {
         ResponseSearchPolicy response = new ResponseSearchPolicy();
         int statusCode = 200;
         DateTime requestDate;
 
-        private readonly ICmiService _servicecmi;
+        private readonly IVmiService _servicevmi;
         private readonly IConfiguration _config;
-        public CmiController(ICmiService servicecmi, IConfiguration config)
+        public VmiController(IVmiService servicecmi, IConfiguration config)
         {
-            _servicecmi = servicecmi;
+            _servicevmi = servicecmi;
             _config = config;
         }
         [Route("api/1.0/SearchPolicyByRangeDate")]
@@ -46,6 +44,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
                 startYear = startYear,
                 endYear = endYear
             };
+
             requestDate = DateTime.Now;
 
             try
@@ -57,23 +56,23 @@ namespace SearchPolicy.Api.Controllers.Cmi
 
                 switch (field)
                 {
+                    case "app":
+                        result = _servicevmi.GenarateQuerySearchAppByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        break;
                     case "pol":
-                        result = _servicecmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned, GetConnection());
                         break;
                     case "license":
-                        result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchLicense(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "chassis":
-                        result = _servicecmi.GenarateQueryChassisByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchChassisByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "name":
-                        result = _servicecmi.GenarateQueryNameByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
-                        break;
-                    case "serial":
-                        result = _servicecmi.GenarateQuerySerialnumberByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenerateQuerySearchNameByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "idno":
-                        result = _servicecmi.GenarateQueryIdNoByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchIdNoByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
                         break;
                 }
 
@@ -112,19 +111,20 @@ namespace SearchPolicy.Api.Controllers.Cmi
                 return StatusCode(statusCode, new { response, data = new List<ResponseSearchByRangeDateModel>() });
             }
         }
+
         private string GetConnection()
-        {                                                                                                                                                                        
+        {
             var conn = string.Empty;
             try
             {
                 if (_config.GetSection("DataDefault")["DBSWHour"].IndexOf("," + DateTime.Now.Hour.ToString() + ",") > 0)
                 {
-                    conn = _config.GetConnectionString("CmiDB2");
+                    conn = _config.GetConnectionString("VmiDB2");
                     // เวลาที่ switch db (intranetdb)
                 }
                 else
                 {
-                    conn = _config.GetConnectionString("CmiDB1");
+                    conn = _config.GetConnectionString("VmiDB1");
                     // เวลาหลัก
                 }
             }
