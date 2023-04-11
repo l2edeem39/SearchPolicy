@@ -29,7 +29,7 @@ namespace SearchPolicy.Api.Controllers.Vmi
         }
         [Route("api/1.0/SearchPolicyByRangeDate")]
         [HttpPost]
-        public IActionResult SearchPolicyByRangeDate(string field, string keyword, string startYear, string endYear)
+        public IActionResult SearchPolicyByRangeDate([FromBody] RequestSearchAppByRangeDateVmi requestSearch)
         {
             RequestHeader requestHeader = new RequestHeader
             {
@@ -37,42 +37,34 @@ namespace SearchPolicy.Api.Controllers.Vmi
                 requestTime = Request.Headers["requestTime"].ToString()
             };
 
-            RequestSearchAppByRangeDate requestSearch = new RequestSearchAppByRangeDate
-            {
-                field = field,
-                keyword = keyword,
-                startYear = startYear,
-                endYear = endYear
-            };
-
             requestDate = DateTime.Now;
 
             try
             {
                 var result = new List<ResponseSearchByRangeDateModel>();
-                startYear = !string.IsNullOrEmpty(startYear) ? startYear.Substring(2, 2) : string.Empty;
-                endYear = !string.IsNullOrEmpty(endYear) ? endYear.Substring(2, 2) : string.Empty;
+                requestSearch.startYear = !string.IsNullOrEmpty(requestSearch.startYear) ? requestSearch.startYear.Substring(2, 2) : string.Empty;
+                requestSearch.endYear = !string.IsNullOrEmpty(requestSearch.endYear) ? requestSearch.endYear.Substring(2, 2) : string.Empty;
                 var MaxPolicyReturned = _config.GetSection("DataDefault")["MaxPolicyReturned"].ToString();
 
-                switch (field)
+                switch (requestSearch.field)
                 {
                     case "app":
-                        result = _servicevmi.GenarateQuerySearchAppByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchAppByRangeDate(requestSearch.keyword, MaxPolicyReturned, GetConnection());
                         break;
                     case "pol":
-                        result = _servicevmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchPolByRangeDate(requestSearch.keyword, MaxPolicyReturned, GetConnection());
                         break;
                     case "license":
-                        result = _servicevmi.GenarateQuerySearchLicense(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchLicense(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "chassis":
-                        result = _servicevmi.GenarateQuerySearchChassisByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchChassisByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "name":
-                        result = _servicevmi.GenerateQuerySearchNameByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenerateQuerySearchNameByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "idno":
-                        result = _servicevmi.GenarateQuerySearchIdNoByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicevmi.GenarateQuerySearchIdNoByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                 }
 
@@ -135,7 +127,7 @@ namespace SearchPolicy.Api.Controllers.Vmi
             return conn;
         }
 
-        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code, string connectionString)
+        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDateVmi requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code, string connectionString)
         {
             var log = new LogModel
             {
@@ -155,7 +147,7 @@ namespace SearchPolicy.Api.Controllers.Vmi
                 await Logging.Logging.LogSuccess(log, connectionString);
         }
 
-        private async void WriteLog(RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code, string connectionString)
+        private async void WriteLog(RequestSearchAppByRangeDateVmi requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code, string connectionString)
         {
             var log = new LogModel
             {
