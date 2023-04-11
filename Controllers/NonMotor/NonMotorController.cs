@@ -33,7 +33,7 @@ namespace SearchPolicy.Api.Controllers.NonMotor
 
         [Route("api/1.0/SearchPolicyByRangeDate")]
         [HttpPost]
-        public IActionResult SearchPolicyByRangeDate(string field, string keyword, string keyname, string startYear, string endYear)
+        public IActionResult SearchPolicyByRangeDate([FromBody] RequestSearchAppByRangeDate requestSearch)  //string field, string keyword, string keyname, string startYear, string endYear
         {
             RequestHeader requestHeader = null;
             requestHeader = new RequestHeader
@@ -42,15 +42,15 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 requestTime = Request.Headers["requestTime"].ToString()
             };
 
-            RequestSearchAppByRangeDate requestSearch = null;
-            requestSearch = new RequestSearchAppByRangeDate
-            {
-                fieldType = field,
-                keyword = keyword,
-                keyname = keyname,
-                startYear = startYear,
-                endYear = endYear
-            };
+            //RequestSearchAppByRangeDate requestSearch = null;
+            //requestSearch = new RequestSearchAppByRangeDate
+            //{
+            //    fieldType = field,
+            //    keyword = keyword,
+            //    keyname = keyname,
+            //    startYear = startYear,
+            //    endYear = endYear
+            //};
             int statusCode = HttpStatusHelper.OK;
             requestDate = DateTime.Now;
             try
@@ -67,38 +67,38 @@ namespace SearchPolicy.Api.Controllers.NonMotor
                 
                 var MaxPolicyReturned = _config.GetValue<int>("DataDefault:MaxPolicyReturned");
                 var SubclassCar = _config.GetValue<string>("DataDefault:SubclassByType:Car");
-                startYear = !string.IsNullOrEmpty(startYear) ? DateTime.Parse("01/01/" + startYear).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
-                endYear = !string.IsNullOrEmpty(endYear) ? DateTime.Parse("01/01/" + endYear).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
+                var startYear = !string.IsNullOrEmpty(requestSearch.startYear) ? DateTime.Parse("01/01/" + requestSearch.startYear).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
+                var endYear = !string.IsNullOrEmpty(requestSearch.endYear) ? DateTime.Parse("01/01/" + requestSearch.endYear).ToString("yyyy", new CultureInfo("en-EN")).Substring(2, 2) : string.Empty;
                 var nonMotor = new NonMotorService();
 
-                switch (field)
+                switch (requestSearch.fieldType)
                 {
                     case "app":
-                        SearchPolicys = nonMotor.GenarateQuerySearchAppByRangeDate(keyword, keyname, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchAppByRangeDate(requestSearch.keyword, requestSearch.keyname, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                     case "pol":
-                        SearchPolicys = nonMotor.GenarateQuerySearchPolByRangeDate(keyword, keyname, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchPolByRangeDate(requestSearch.keyword, requestSearch.keyname, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                     case "idno":
-                        SearchPolicys = nonMotor.GenarateQuerySearchIdNoByRangeDate(keyword, keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchIdNoByRangeDate(requestSearch.keyword, requestSearch.keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                     case "license":
-                        SearchPolicys = nonMotor.GenarateQuerySearchbyLicenseByRangeDate(keyword, keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchbyLicenseByRangeDate(requestSearch.keyword, requestSearch.keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
                         break;
                     case "chassis":
-                        SearchPolicys = nonMotor.GenarateQuerySearchChassisByRangeDate(keyword, keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchChassisByRangeDate(requestSearch.keyword, requestSearch.keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
                         break;
                     case "engine":
-                        SearchPolicys = nonMotor.GenarateQuerySearchEngineNoRangeDate(keyword, keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchEngineNoRangeDate(requestSearch.keyword, requestSearch.keyname, startYear, endYear, MaxPolicyReturned, SubclassCar, _config.GetConnectionString(Condb));
                         break;
                     case "asname":
-                        SearchPolicys = nonMotor.GenarateQuerySearchAsnameByRangeDate(keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchAsnameByRangeDate(requestSearch.keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                     case "name":
-                        SearchPolicys = nonMotor.GenarateQuerySearchNameByRangeDate(keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchNameByRangeDate(requestSearch.keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                     case "hldname":
-                        SearchPolicys = nonMotor.GenarateQuerySearchHldnameRangeDate(keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
+                        SearchPolicys = nonMotor.GenarateQuerySearchHldnameRangeDate(requestSearch.keyname, startYear, endYear, MaxPolicyReturned, _config.GetConnectionString(Condb));
                         break;
                 }
                 if (SearchPolicys == null)
