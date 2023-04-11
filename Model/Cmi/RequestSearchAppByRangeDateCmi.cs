@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SearchPolicy.Api.Model.Vmi
+namespace SearchPolicy.Api.Model.Cmi
 {
-    public class RequestSearchAppByRangeDate
+    public class RequestSearchAppByRangeDateCmi
     {
         public string field { get; set; }
         public string keyword { get; set; }

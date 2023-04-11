@@ -31,7 +31,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
         }
         [Route("api/1.0/SearchPolicyByRangeDate")]
         [HttpPost]
-        public IActionResult SearchPolicyByRangeDate(string field, string keyword, string startYear, string endYear)
+        public IActionResult SearchPolicyByRangeDate([FromBody] RequestSearchAppByRangeDateCmi requestSearch)
         {
             RequestHeader requestHeader = new RequestHeader
             {
@@ -39,41 +39,34 @@ namespace SearchPolicy.Api.Controllers.Cmi
                 requestTime = Request.Headers["requestTime"].ToString()
             };
 
-            RequestSearchAppByRangeDate requestSearch = new RequestSearchAppByRangeDate
-            {
-                field = field,
-                keyword = keyword,
-                startYear = startYear,
-                endYear = endYear
-            };
             requestDate = DateTime.Now;
 
             try
             {
                 var result = new List<ResponseSearchByRangeDateModel>();
-                startYear = !string.IsNullOrEmpty(startYear) ? startYear.Substring(2, 2) : string.Empty;
-                endYear = !string.IsNullOrEmpty(endYear) ? endYear.Substring(2, 2) : string.Empty;
+                requestSearch.startYear = !string.IsNullOrEmpty(requestSearch.startYear) ? requestSearch.startYear.Substring(2, 2) : string.Empty;
+                requestSearch.endYear = !string.IsNullOrEmpty(requestSearch.endYear) ? requestSearch.endYear.Substring(2, 2) : string.Empty;
                 var MaxPolicyReturned = _config.GetSection("DataDefault")["MaxPolicyReturned"].ToString();
 
-                switch (field)
+                switch (requestSearch.field)
                 {
                     case "pol":
-                        result = _servicecmi.GenarateQuerySearchPolByRangeDate(keyword, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQuerySearchPolByRangeDate(requestSearch.keyword, MaxPolicyReturned, GetConnection());
                         break;
                     case "license":
-                        result = _servicecmi.GenarateQueryLicenseByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQueryLicenseByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "chassis":
-                        result = _servicecmi.GenarateQueryChassisByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQueryChassisByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "name":
-                        result = _servicecmi.GenarateQueryNameByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQueryNameByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "serial":
-                        result = _servicecmi.GenarateQuerySerialnumberByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQuerySerialnumberByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                     case "idno":
-                        result = _servicecmi.GenarateQueryIdNoByRangeDate(keyword, startYear, endYear, MaxPolicyReturned, GetConnection());
+                        result = _servicecmi.GenarateQueryIdNoByRangeDate(requestSearch.keyword, requestSearch.startYear, requestSearch.endYear, MaxPolicyReturned, GetConnection());
                         break;
                 }
 
@@ -135,7 +128,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
             return conn;
         }
 
-        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code, string connectionString)
+        private async void WriteLog(LogEnum.Level level, RequestSearchAppByRangeDateCmi requestData, RequestHeader requestHeader, ResponseSearchPolicy response, int status_code, string connectionString)
         {
             var log = new LogModel
             {
@@ -155,7 +148,7 @@ namespace SearchPolicy.Api.Controllers.Cmi
                 await Logging.Logging.LogSuccess(log, connectionString);
         }
 
-        private async void WriteLog(RequestSearchAppByRangeDate requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code, string connectionString)
+        private async void WriteLog(RequestSearchAppByRangeDateCmi requestData, RequestHeader requestHeader, ResponseSearchPolicy response, Exception ex, int status_code, string connectionString)
         {
             var log = new LogModel
             {
