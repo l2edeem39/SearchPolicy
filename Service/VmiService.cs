@@ -1,20 +1,19 @@
 ﻿using Microsoft.Data.SqlClient;
-using SearchPolicy.Api.Model.Cmi;
+using SearchPolicy.Api.Model.Vmi;
 using SearchPolicy.Api.Service.Interface;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Data.Entity.Core.EntityClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SearchPolicy.Api.Service
 {
-    public class CmiService : ICmiService
+    public class VmiService : IVmiService
     {
         SqlConnection connection;
-        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchPolByRangeDate(string polNumber, string maxCmiReturned, string conn)
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchAppByRangeDate(string polNumber, string maxCmiReturned, string conn)
         {
             try
             {
@@ -23,7 +22,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Open();
 
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQuerySearchPolByRangeDate", connection))
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenarateQuerySearchAppByRangeDate", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -52,7 +51,45 @@ namespace SearchPolicy.Api.Service
             }
         }
 
-        public List<ResponseSearchByRangeDateModel> GenarateQueryLicenseByRangeDate(string licenseNumber, string startYear, string endYear, string maxCmiReturned, string conn)
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchPolByRangeDate(string polNumber, string maxCmiReturned, string conn)
+        {
+            try
+            {
+                var result = new List<ResponseSearchByRangeDateModel>();
+                using (SqlConnection connection = new SqlConnection(conn))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenarateQuerySearchPolByRangeDate", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@polnumber", polNumber);
+                        command.Parameters.AddWithValue("@maxCmiReturned ", maxCmiReturned);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            DataSet dataSet = new DataSet();
+                            adapter.Fill(dataSet);
+                            var dt = dataSet.Tables[0];
+                            result = GetDataTableToModelList(dt);
+                        }
+                    }
+                    connection.Close();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (connection != null && connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+                throw ex;
+            }
+        }
+
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchLicense(string licenseNumber, string startYear, string endYear, string maxCmiReturned, string conn)
         {
             try
             {
@@ -65,7 +102,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Open();
 
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQueryLicenseByRangeDate", connection))
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenarateQuerySearchLicenseByRangeDate", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -96,7 +133,7 @@ namespace SearchPolicy.Api.Service
             }
         }
 
-        public List<ResponseSearchByRangeDateModel> GenarateQueryChassisByRangeDate(string chassisNumber, string startYear, string endYear, string maxCmiReturned, string conn)
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchChassisByRangeDate(string chassisNumber, string startYear, string endYear, string maxCmiReturned, string conn)
         {
             try
             {
@@ -109,7 +146,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Open();
 
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQueryChassisByRangeDate", connection))
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenarateQuerySearchChassisByRangeDate", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -140,7 +177,7 @@ namespace SearchPolicy.Api.Service
             }
         }
 
-        public List<ResponseSearchByRangeDateModel> GenarateQueryNameByRangeDate(string name, string startYear, string endYear, string maxCmiReturned, string conn)
+        public List<ResponseSearchByRangeDateModel> GenerateQuerySearchNameByRangeDate(string name, string startYear, string endYear, string maxCmiReturned, string conn)
         {
             try
             {
@@ -153,7 +190,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Open();
 
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQueryNameByRangeDate", connection))
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenerateQuerySearchNameByRangeDate", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -184,7 +221,7 @@ namespace SearchPolicy.Api.Service
             }
         }
 
-        public List<ResponseSearchByRangeDateModel> GenarateQuerySerialnumberByRangeDate(string serialNumber, string startYear, string endYear, string maxCmiReturned, string conn)
+        public List<ResponseSearchByRangeDateModel> GenarateQuerySearchIdNoByRangeDate(string idNo, string startYear, string endYear, string maxCmiReturned, string conn)
         {
             try
             {
@@ -197,51 +234,7 @@ namespace SearchPolicy.Api.Service
                 {
                     connection.Open();
 
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQuerySerialnumberByRangeDate", connection))
-                    {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-
-                        command.Parameters.AddWithValue("@serialnumber", serialNumber);
-                        command.Parameters.AddWithValue("@startYear ", startYear);
-                        command.Parameters.AddWithValue("@endYear ", endYear);
-                        command.Parameters.AddWithValue("@maxCmiReturned ", maxCmiReturned);
-
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                        {
-                            DataSet dataSet = new DataSet();
-                            adapter.Fill(dataSet);
-                            var dt = dataSet.Tables[0];
-                            result = GetDataTableToModelList(dt);
-                        }
-                    }
-                    connection.Close();
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                if (connection != null && connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-                throw ex;
-            }
-        }
-
-        public List<ResponseSearchByRangeDateModel> GenarateQueryIdNoByRangeDate(string idNo, string startYear, string endYear, string maxCmiReturned, string conn)
-        {
-            try
-            {
-                var result = new List<ResponseSearchByRangeDateModel>();
-
-                string currentDate = DateTime.Now.ToString("yyyy", new CultureInfo("th-TH"));
-                string currentYear = !string.IsNullOrEmpty(currentDate.ToString()) ? currentDate.ToString().Substring(2, 2) : string.Empty;
-
-                using (SqlConnection connection = new SqlConnection(conn))
-                {
-                    connection.Open();
-
-                    using (SqlCommand command = new SqlCommand("sp_GenarateQueryIdNoByRangeDate", connection))
+                    using (SqlCommand command = new SqlCommand("sp_Vmi_GenarateQuerySearchIdNoByRangeDate", connection))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -292,10 +285,10 @@ namespace SearchPolicy.Api.Service
                     model.Polyr = row["polyr"] != null ? (string)row["polyr"].ToString() : string.Empty;
                     model.Polbr = row["polbr"] != null ? (string)row["polbr"].ToString() : string.Empty;
                     model.Polno = row["polno"] != null ? (string)row["polno"].ToString() : string.Empty;
-                    model.Appnumber = string.Empty;
-                    model.Appyr = string.Empty;
-                    model.Appbr = string.Empty;
-                    model.Appno = string.Empty;
+                    model.Appnumber = row["appnumber"] != null ? (string)row["appnumber"].ToString() : string.Empty;
+                    model.Appyr = row["appyr"] != null ? (string)row["appyr"].ToString() : string.Empty;
+                    model.Appbr = row["appbr"] != null ? (string)row["appbr"].ToString() : string.Empty;
+                    model.Appno = row["appno"] != null ? (string)row["appno"].ToString() : string.Empty;
                     model.Fullname = row["fullname"] != null ? (string)row["fullname"].ToString() : string.Empty;
                     model.Prename = row["prename"] != null ? (string)row["prename"].ToString() : string.Empty;
                     model.Fname = row["firstname"] != null ? (string)row["firstname"].ToString() : string.Empty;
@@ -304,7 +297,6 @@ namespace SearchPolicy.Api.Service
                     model.Licenseno = row["licenseno"] != null ? (string)row["licenseno"].ToString() : string.Empty;
                     model.Licenseprv = row["licenseprv"] != null ? (string)row["licenseprv"].ToString() : string.Empty;
                     model.Chassisno = row["chassisno"] != null ? (string)row["chassisno"].ToString() : string.Empty;
-                    model.Serialno = row["serialno"] != null ? (string)row["serialno"].ToString() : string.Empty;
 
                     result.Add(model);
                     index++;

@@ -34,6 +34,7 @@ namespace SearchPolicy
 
             //add Service
             services.AddTransient<ICmiService, CmiService>();
+            services.AddTransient<IVmiService, VmiService>();
 
             services.AddSwaggerGen(c =>
             {

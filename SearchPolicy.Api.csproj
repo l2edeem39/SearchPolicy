@@ -5,8 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Vmi\" />
-    <Folder Include="Validator\" />
+    <Compile Remove="Validator\**" />
+    <Content Remove="Validator\**" />
+    <EmbeddedResource Remove="Validator\**" />
+    <None Remove="Validator\**" />
   </ItemGroup>
 
   <ItemGroup>

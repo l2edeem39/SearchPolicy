@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SearchPolicy.Api.Model.Cmi
+namespace SearchPolicy.Api.Model.Vmi
 {
     public class ResponseSearchByRangeDateModel
     {
@@ -26,6 +26,5 @@ namespace SearchPolicy.Api.Model.Cmi
         public string Licenseno { get; set; }
         public string Licenseprv { get; set; }
         public string Chassisno { get; set; }
-        public string Serialno { get; set; }
     }
 }
